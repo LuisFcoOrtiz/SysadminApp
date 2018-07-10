@@ -1,8 +1,10 @@
 package comluisfcoortiz.httpsgithub.sysadminapp;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,8 +23,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import comluisfcoortiz.httpsgithub.sysadminapp.utilities.SshConector;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    SshConector sshConector = new SshConector("192.168.1.100","luis","luis");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,23 +37,25 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
         // in this example, a LineChart is initialized from xml
-        LineChart chart = (LineChart) findViewById(R.id.chart);
-        List<Entry> entries = new ArrayList<Entry>();
-
-        entries.add(new Entry(1,96) );
-        entries.add(new Entry(2,92) );
-        entries.add(new Entry(3,91) );
-        entries.add(new Entry(4,95) );
-        entries.add(new Entry(5,88) );
-        entries.add(new Entry(6,80) );
-        entries.add(new Entry(7,86) );
-
-        LineDataSet dataSet = new LineDataSet(entries, "Peso obtenido");
-
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
-        chart.invalidate(); // refresh
+//        LineChart chart = (LineChart) findViewById(R.id.chart);
+//        List<Entry> entries = new ArrayList<Entry>();
+//
+//        entries.add(new Entry(1,96) );
+//        entries.add(new Entry(2,92) );
+//        entries.add(new Entry(3,91) );
+//        entries.add(new Entry(4,95) );
+//        entries.add(new Entry(5,88) );
+//        entries.add(new Entry(6,80) );
+//        entries.add(new Entry(7,86) );
+//
+//        LineDataSet dataSet = new LineDataSet(entries, "Peso obtenido");
+//
+//        LineData lineData = new LineData(dataSet);
+//        chart.setData(lineData);
+//        chart.invalidate(); // refresh
 
         //floating button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -108,6 +116,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
+//            if(sshConector.connect()) {
+//                Log.d("COMPROBANDO CONEXION","HAY CONEXION");
+//            }else {
+//                Log.d("COMPROBANDO CONEXION","NOOOOOOOOOO HAY CONEXION");
+//            }
+            new ThreadAsyn().execute();
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
@@ -125,4 +139,18 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-}
+
+    class ThreadAsyn extends AsyncTask<String,String,String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            if(sshConector.connect()) {
+                Log.i("INFO_CONEXION","CONECTADOOOO");
+            }else {
+                Log.i("INFO_CONEXION","IMPOSIBLE CONECTAR");
+            }
+            return "conectado";
+        }
+    }
+
+}//end of MainActivity
