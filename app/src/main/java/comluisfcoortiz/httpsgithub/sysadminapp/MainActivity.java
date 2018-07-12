@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     ProgressDialog progressDialog;
 
-    SshConector sshConector = new SshConector("192.168.1.100","luis","luis");
+    SshConector sshConector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,10 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
-        getSettings();
+        getSettings();      //established the settings
+        sshConector = new SshConector(settings.getString("hostName","127.0.0.1"),settings.getString("userRoot","user"),settings.getString("userPassword","password"));
+
+
         //AUTOMATIC connection to server
         if(autoConnection) {
             new ThreadAsyn().execute();     //prepara la conexion
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.connectServer) {
             new ThreadAsyn().execute();     //prepara la conexion
         } else if (id == R.id.nav_gallery) {
 
@@ -130,7 +133,14 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
+    }//left menu items
+
+//    SharedPreferences.OnSharedPreferenceChangeListener spChanged = new SharedPreferences.OnSharedPreferenceChangeListener() {
+//            @Override
+//            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+//                // your stuff here
+//            }
+//    };//detect changes in settings
 
     //open settings view
     public void setSettings() {
@@ -143,7 +153,6 @@ public class MainActivity extends AppCompatActivity
         autoConnection = settings.getBoolean("automaticConnection",false);
 
     }
-
 
     //asyntask
     class ThreadAsyn extends AsyncTask<String,Integer,Boolean>{

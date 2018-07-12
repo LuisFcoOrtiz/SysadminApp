@@ -6,4 +6,20 @@
         android:summary="@string/connectionCheckSummary"
         android:defaultValue="false"/>
 
+    <EditTextPreference
+        android:key="hostName"
+        android:title="@string/serverName"
+        android:defaultValue="192.168.1."/>
+
+    <EditTextPreference
+        android:key="userRoot"
+        android:title="@string/userName"
+        android:summary="Indicar  nivel  de  volumen"
+        android:defaultValue="root"/>
+
+    <EditTextPreference
+        android:key="userPassword"
+        android:title="@string/userPassword"
+        android:inputType="textPassword" />
+
 </PreferenceScreen>

@@ -11,7 +11,14 @@
     <!-- settings-->
     <string name="connectionCheck">Conexión automatica</string>
     <string name="connectionCheckSummary">Conecta automaticamente al iniciar aplicacion</string>
+    <string name="serverName">Dirección de servidor</string>
+    <string name="userName">Nombre de usuario (root)</string>
+    <string name="userPassword">Contraseña de usuario (root)</string>
+
     <string name="autoMessageNO">Sin conexión automática con el servidor</string>
+
+    <!-- drawer menu strings (left)-->
+    <string name="icon_connection">Conectar servidor</string>
 
 
     <string name="action_settings">Configuración</string>
