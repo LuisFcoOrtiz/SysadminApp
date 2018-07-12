@@ -7,6 +7,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import java.net.NoRouteToHostException;
 import java.util.Properties;
 
 public class SshConector {
@@ -24,7 +25,7 @@ public class SshConector {
         host = hostE;
         user = userE;
         password = passwordE;
-        intTimeOut = 60000;  //timeout by default
+        intTimeOut = 60000;         //timeout by default
         jschChannel  = new JSch();
     }//end constructor
 
@@ -42,7 +43,7 @@ public class SshConector {
             //start
             session.connect(intTimeOut);
             return true;    //connection correctly
-        } catch (JSchException e) {
+        }catch (JSchException e) {
             e.printStackTrace();
             Log.i("INFO_SESSION","Error: "+ e.getMessage());
             return false;   //error

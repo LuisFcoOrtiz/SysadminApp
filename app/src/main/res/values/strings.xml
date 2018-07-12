@@ -4,5 +4,18 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <!-- Connection messages-->
+    <string name="connectionOK">Conexión realizada con éxito</string>
+    <string name="connectionNO">Imposible conectar con servidor</string>
+    <string name="connectingServerMSG">Conectando con el servidor</string>
+    <!-- settings-->
+    <string name="connectionCheck">Conexión automatica</string>
+    <string name="connectionCheckSummary">Conecta automaticamente al iniciar aplicacion</string>
+    <string name="autoMessageNO">Sin conexión automática con el servidor</string>
+
+
+    <string name="action_settings">Configuración</string>
+    <string name="title_activity_settings">Configuración</string>
+
+
 </resources>

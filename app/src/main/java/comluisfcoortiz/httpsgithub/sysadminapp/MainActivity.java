@@ -1,7 +1,11 @@
 package comluisfcoortiz.httpsgithub.sysadminapp;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -14,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -23,10 +28,17 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import comluisfcoortiz.httpsgithub.sysadminapp.settings.Settings;
 import comluisfcoortiz.httpsgithub.sysadminapp.utilities.SshConector;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    //settings and variables
+    SharedPreferences settings;
+    boolean autoConnection;
+
+    ProgressDialog progressDialog;
 
     SshConector sshConector = new SshConector("192.168.1.100","luis","luis");
 
@@ -37,25 +49,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-        // in this example, a LineChart is initialized from xml
-//        LineChart chart = (LineChart) findViewById(R.id.chart);
-//        List<Entry> entries = new ArrayList<Entry>();
-//
-//        entries.add(new Entry(1,96) );
-//        entries.add(new Entry(2,92) );
-//        entries.add(new Entry(3,91) );
-//        entries.add(new Entry(4,95) );
-//        entries.add(new Entry(5,88) );
-//        entries.add(new Entry(6,80) );
-//        entries.add(new Entry(7,86) );
-//
-//        LineDataSet dataSet = new LineDataSet(entries, "Peso obtenido");
-//
-//        LineData lineData = new LineData(dataSet);
-//        chart.setData(lineData);
-//        chart.invalidate(); // refresh
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
+        getSettings();
+        //AUTOMATIC connection to server
+        if(autoConnection) {
+            new ThreadAsyn().execute();     //prepara la conexion
+        }else {
+            Toast.makeText(getApplicationContext(),  R.string.autoMessageNO, Toast.LENGTH_LONG).show();
+        }
 
         //floating button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -96,16 +97,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        //top right menu
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            setSettings();      //open activity view
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -116,13 +114,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-//            if(sshConector.connect()) {
-//                Log.d("COMPROBANDO CONEXION","HAY CONEXION");
-//            }else {
-//                Log.d("COMPROBANDO CONEXION","NOOOOOOOOOO HAY CONEXION");
-//            }
-            new ThreadAsyn().execute();
-            // Handle the camera action
+            new ThreadAsyn().execute();     //prepara la conexion
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -140,17 +132,60 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    class ThreadAsyn extends AsyncTask<String,String,String>{
+    //open settings view
+    public void setSettings() {
+        Intent i = new Intent(this,Settings.class);
+        startActivity(i);
+    }
+
+    //set the variables from the settings
+    public void getSettings() {
+        autoConnection = settings.getBoolean("automaticConnection",false);
+
+    }
+
+
+    //asyntask
+    class ThreadAsyn extends AsyncTask<String,Integer,Boolean>{
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected Boolean doInBackground(String... strings) {
+
             if(sshConector.connect()) {
                 Log.i("INFO_CONEXION","CONECTADOOOO");
+                return true;
             }else {
                 Log.i("INFO_CONEXION","IMPOSIBLE CONECTAR");
+                return false;
+            }   //connect with the server
+        }//start the task
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.connectingServerMSG));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            super.onPreExecute();
+        }//before the task
+
+
+        @Override
+        protected void onPostExecute(Boolean resultConnection) {
+
+            if(resultConnection) {
+                Toast.makeText(getApplicationContext(), R.string.connectionOK, Toast.LENGTH_LONG).show();
+            }else {
+                Toast.makeText(getApplicationContext(), R.string.connectionNO, Toast.LENGTH_LONG).show();
             }
-            return "conectado";
-        }
-    }
+            progressDialog.dismiss();       //end progress dialog
+            super.onPostExecute(resultConnection);
+
+        }//end of task
+
+
+    }//end asyntask
 
 }//end of MainActivity
